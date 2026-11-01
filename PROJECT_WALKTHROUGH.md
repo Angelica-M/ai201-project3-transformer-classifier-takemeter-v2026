@@ -48,7 +48,7 @@ This project runs across **two units that do different jobs**:
 
 | Unit | Job |
 |---|---|
-| **Unit 5** (this document's current scope) | Design the label taxonomy, collect and label at least 200 real examples, run one training pass, and commit five acceptance criteria — written before any result exists. |
+| **Unit 5** | Design the label taxonomy, collect and label at least 200 real examples, run one training pass, and commit five acceptance criteria — written before any result exists. |
 | **Unit 6** | Test the classifier against a zero-shot baseline and against labels a staff member wrote independently for the same posts. Same repository both units. |
 
 In this unit **all five acceptance criteria are the author's own** — no
@@ -722,9 +722,6 @@ Still a placeholder: no taxonomy, no labels, no data yet.
 opinion-community (the brief's own NBA/music examples) changes what "sorting
 posts" even means — by topic and role, rather than by argument quality. That
 choice, made here, shapes everything built afterward.
-
-**Before moving on:** not independently verifiable from repository contents
-beyond the community name itself appearing in Milestone 2's commits.
 
 ---
 

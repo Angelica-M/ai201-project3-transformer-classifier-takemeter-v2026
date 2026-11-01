@@ -1,6 +1,6 @@
 # DistilBERT, LoRA and Full Fine-Tuning Explained: What This Project Actually Uses
 
-> **Short answer for this project:** TakeMeter fine-tunes **DistilBERT** with
+> **Short answer for distinction of concepts:** TakeMeter fine-tunes **DistilBERT** with
 > **full fine-tuning**. **LoRA is not used anywhere in this repository.**
 > DistilBERT is a *model*; LoRA is a *training method* you could apply to it.
 > They are not alternatives to each other, and one is not a kind of the other.

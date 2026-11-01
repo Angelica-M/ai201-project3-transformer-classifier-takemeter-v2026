@@ -949,4 +949,4 @@ I meant the 21 labels to separate posts along five different axes (trade scope, 
 
 🛠️ **Full environment setup guide, corrected against this repo's actual state: [ENVIRONMENT_SETUP.md](ENVIRONMENT_SETUP.md)**
 
-🤖 **DistilBERT fine-tuning: full adaptation, LoRA analysis, and implementation guide: [DistilBERT_LoRA_and_full_fine_tuning_explained.md](DistilBERT_LoRA_and_full_fine_tuning_explained.md)**
+🤖 **DistilBERT fine-tuning guide (full adaptation, LoRA analysis, and implementation): [DistilBERT_LoRA_and_full_fine_tuning_explained.md](DistilBERT_LoRA_and_full_fine_tuning_explained.md)**
