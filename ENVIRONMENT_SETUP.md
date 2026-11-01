@@ -21,7 +21,7 @@ baseline — and everything the notebook writes is committed from here, the
 same as any other file.
 
 > **Reality check:** confirmed this repository exists locally at
-> `ai201-project3-takemeter-starter-v2026`, with its own `.git` history (66
+> `ai201-project3-takemeter-starter-v2026`, with its own `.git` history (67
 > commits when this file was audited, from `git log --oneline | wc -l`) and
 > its own `.venv` (`.venv/Scripts/python.exe` present, and `.venv/` is listed
 > in `.gitignore`).
@@ -186,3 +186,52 @@ One machine, one repository, for both units — nothing is pushed
 automatically. Anything the notebook writes (`results.json`, `test_split.csv`,
 and later the three-seed and baseline files) is committed deliberately, the
 same as any other file in this repo.
+
+---
+
+## 6. Unit 6 Setup and Reality Checks
+
+Unit 6 reuses the Unit 5 environment and adds no packages. What follows is
+what the Unit 6 setup text says, checked against this repository.
+
+**Prerequisite files.** `results.json` and `test_split.csv` must be committed
+from Unit 5, because `baseline.py` reads `test_split.csv` and otherwise falls
+back to a random sample of `labels.csv`, so the baseline and the trained model
+are no longer scored on the same posts. Verified: both are tracked
+(`git ls-files results.json test_split.csv`), and the 31 held-out posts are the
+ones the baseline scored (`held_out: true` in `baseline_results.json`).
+
+**The baseline model.** `python baseline.py` downloads
+`facebook/bart-large-mnli` (about 1.6 GB) on first use. In this working copy
+`test.py` reports `[PASS] Baseline model: already downloaded`. It runs on the
+machine's own CPU, with no account or key, and is slow by design (the run
+captured for this document is in `PROJECT_WALKTHROUGH.md`, Unit 6,
+Milestone 1).
+
+**The staff files.** `data/staff_posts.csv` and `data/staff_taxonomy.md` ship in
+the starter; `data/staff_labels.csv` is sent separately and must not be opened
+before the student's own 30 labels are saved.
+
+> **Reality check — the two accepted file shapes are not interchangeable.**
+> `agreement.py`'s default mode joins `data/staff_posts.csv` to
+> `data/staff_labels.csv` on an `id` column. The real staff file has columns
+> `id`, `label`, `borderline`, `why`. A file with only `text` and `label`
+> columns fails the default mode with
+> `data/staff_labels.csv has no 'id' column, so the two files can't be joined.`
+> and can be read only with `--staff <file>`, which treats the file as
+> already complete. In this repository the first `text`,`label` file turned
+> out to be a copy of the student's own labels, and `--staff` accepted it and
+> reported a meaningless 30 of 30. Check that the staff file is not identical
+> to `my_staff_labels.csv` (`cmp data/staff_labels.csv my_staff_labels.csv`)
+> before trusting a perfect score.
+
+**Windows output encoding.** `baseline.py` and `agreement.py` reconfigure their
+own stdout to UTF-8 at the top of the file, so redirecting their output to a
+file works on Windows. That is stated in the code; the other scripts were run
+for this document with `PYTHONIOENCODING=utf-8` set.
+
+**Notebook run label.** Section 6 writes `results_three_seeds_<RUN_LABEL>.json`.
+The shipped value is `"before"`; it must be changed to `"after"` before the
+Milestone 5 re-run or the "before" file is overwritten. The committed notebook
+now has `RUN_LABEL = "after"` and `EPOCHS = 15`; to reproduce the "before" run
+set `EPOCHS = 3` and `RUN_LABEL = "before"`.
