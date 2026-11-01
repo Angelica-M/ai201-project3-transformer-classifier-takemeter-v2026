@@ -1,20 +1,5 @@
 # TakeMeter — Project Walkthrough
 
-> **Who this is for:** someone with no prior context on this project or on
-> fine-tuning. Every technical term is explained on first use. Numbers come
-> from files and commands actually read and run, not estimated.
->
-> **How this file is built:** a diary and a manual together, one unit at a
-> time. Earlier entries are never rewritten or reordered — only added to.
->
-> **On accuracy:** the author's instruction for this file was explicit —
-> *"the repo may contradict what was in the original details on Unit 5 and 6;
-> in such cases, always trust the repo as the true reality."* Every claim
-> below was checked against the actual repository (git history, `README.md`,
-> `criteria.md`, `data/labels.csv`, `build_dataset.py`, `takemeter.ipynb`,
-> `results.json`) rather than assumed from the course brief. Where the repo
-> and the brief disagree, the disagreement is named, not smoothed over.
->
 > **Scope:** this file covers **Unit 5** (build the dataset, train once, write
 > the criteria) and **Unit 6** (baseline, three seeds, staff agreement,
 > verdicts, one improvement). Unit 5 entries were written first; Unit 6 entries
