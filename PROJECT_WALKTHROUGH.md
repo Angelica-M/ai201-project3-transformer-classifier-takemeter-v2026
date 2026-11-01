@@ -456,22 +456,36 @@ the notebook computes it, 0.042 over the same 16 labels).
 
 ---
 
-## 4. How to Run This Project
+## 4. Setup and Running the Project
 
-Full environment setup — venv, `test.py`, the notebook kernel, and the
-Gemini-key step this repo's data pipeline needs — is in the companion file
-**[`ENVIRONMENT_SETUP.md`](ENVIRONMENT_SETUP.md)**. This section is the
-minimum path, with output captured from this repository's `.venv` on
-2026-10-31.
+This is the single setup-and-run reference for the project, covering both
+units. Every Unit 5 and Unit 6 step has been run, and the output of each is
+committed (table at the end of this section). General setup detail and the
+"Reality check" notes this section links to are in the companion file
+**[`ENVIRONMENT_SETUP.md`](ENVIRONMENT_SETUP.md)**. Captured output below was
+produced on 2026-10-31 in this working copy with its `.venv` active. The
+dataset rebuild (`build_dataset.py`) was deliberately not re-run, for the
+reason given in its caution; the training and three-seed runs were not re-run
+for this section either, and their outputs are the committed result files.
 
-**1. Create the environment and check it:**
+**Prerequisites**
+
+| Need | Value | Where it comes from |
+|---|---|---|
+| Python | 3.11, 3.12 or 3.13 (not 3.14); this working copy runs 3.13.7 | `requirements.txt`; `test.py` output below |
+| Disk and memory | about 9 GB free disk; `test.py` warns under 6 GB of RAM | `MIN_DISK_GB = 9`, `MIN_RAM_GB = 6` in `test.py` |
+| Packages | `pandas`, `transformers`, `datasets`, `accelerate`, `torch`, `scikit-learn` | `requirements.txt`; no hosted model or key |
+| Zero-shot model (Unit 6) | `facebook/bart-large-mnli`, about 1.6 GB, downloaded on the first `baseline.py` run; already downloaded here | `test.py` check "Baseline model" |
+| Gemini API key (only to rebuild the dataset) | `GEMINI_API_KEY` in `.env`, plus `google-generativeai`, `python-dotenv` and `requests`, none of which is in `requirements.txt` | `build_dataset.py`; `ENVIRONMENT_SETUP.md` section 4 |
+
+**Step 1: create the environment and check it**
 ```bash
 python -m venv .venv
-# activate it (see ENVIRONMENT_SETUP.md section 2 for the exact command per OS), then:
+# activate it (exact command per OS: ENVIRONMENT_SETUP.md section 2), then:
 pip install -r requirements.txt
 python test.py
 ```
-Captured output (this working copy, `.venv` active):
+Captured output:
 ```
 AI201 environment check
 ------------------------------------------------------------
@@ -499,51 +513,85 @@ AI201 environment check
 10 passed, 0 failed, 0 to look at, 0 skipped
 ```
 
-**2. Open the notebook, confirm the kernel, run section 1's device cell.**
-Open `takemeter.ipynb` in VS Code, pick this project's `.venv` as the
-kernel, run the first code cell. Captured output (the cell's source run
-with the `.venv` interpreter; its closing explanatory paragraph is omitted):
+**Step 2: open the notebook, confirm the kernel, run the device cell**
+
+Open `takemeter.ipynb` in VS Code, pick this project's `.venv` as the kernel
+and run the first code cell (section 1). Captured output (the cell's source
+run with the `.venv` interpreter; its closing explanatory paragraph is
+omitted):
 ```
 device: cpu  (CPU)
 torch:  2.14.1+cpu
 ```
-The same device and torch version are recorded in `results.json`.
+The same device and torch version are recorded in `results.json`. Run
+section 1 first in every session so the device gets recorded.
 
-**3. Run sections 2-5 for the Unit 5 training run.** In this repository
-that was done by executing the notebook's code cells from a script rather
-than in the editor window (README, "The Training Run"). It writes
-`results.json` and `test_split.csv`.
+**Step 3: Unit 5, the dataset and the first training run**
 
-**4. (Optional) Rebuild the dataset.**
-```bash
-pip install google-generativeai python-dotenv requests
-cp env.txt .env   # then set GEMINI_API_KEY
-python build_dataset.py
-```
-> **Caution:** run this only in a copy of the repository with `data/labels.csv`
-> removed. On the real checkout it appends new posts to the committed
-> dataset; the full explanation is in `ENVIRONMENT_SETUP.md` section 4.
+- *The dataset is already committed* as `data/labels.csv` (204 rows). To
+  rebuild it:
+  ```bash
+  pip install google-generativeai python-dotenv requests
+  cp env.txt .env   # then set GEMINI_API_KEY
+  python build_dataset.py
+  ```
+  > **Caution:** run this only in a copy of the repository with
+  > `data/labels.csv` removed. The script is append-only: on the real
+  > checkout, where every row already has a label, it scrapes up to 100 new
+  > posts per search, appends them and labels them, extending the committed
+  > dataset and invalidating every number computed from it. The full
+  > explanation is in `ENVIRONMENT_SETUP.md` section 4.
+- *The training run* is notebook sections 2 to 5 (labels and settings, split,
+  train, results). In this repository the cells were executed from a script
+  instead of the editor window (README, "The Training Run"). It writes
+  `results.json` and `test_split.csv`. The settings cell now holds the Unit 6
+  improvement (`EPOCHS = 15`); the Unit 5 run used `EPOCHS = 3`.
 
+**Step 4: Unit 6, testing the trained model**
 
-**Unit 6 commands (testing the trained model).** Run these after the steps
-above. Captured output for each is in the milestone named beside it.
+`results.json` and `test_split.csv` must be committed first, because
+`baseline.py` scores `test_split.csv`; without it the script falls back to a
+random sample and the baseline and the model are no longer scored on the same
+posts. Captured output for each command is in the milestone named beside it.
 
 ```bash
 python baseline.py --data data/labels.csv --trained results.json   # Unit 6, Milestone 1
-# notebook: section 1, then section 6 with RUN_LABEL set, then section 7       # Milestone 2
+# notebook: section 1, then section 6 with RUN_LABEL set, then section 7    # Milestone 2
 python agreement.py                                                # Milestone 3
 python kappa.py                                                    # Milestone 3
 python macro_f1_ci.py                                              # Milestone 4
 python macro_f1_ci.py --results results_three_seeds_after.json     # Milestone 5
 ```
-- `baseline.py` takes a few seconds per post on CPU and is slow by design; the
-  zero-shot model is about 1.6 GB on first use and is already downloaded in
-  this working copy (`test.py` reports "Baseline model: already downloaded").
-- Section 6 of the notebook trains three seeds in one cell: about 3.6 minutes
-  at 3 epochs and about 15.6 minutes at 15 epochs on this CPU.
-- Run `agreement.py` only after `my_staff_labels.csv` is saved and
-  `data/staff_labels.csv` has been received; see `ENVIRONMENT_SETUP.md`
-  section 6.
+- `baseline.py` takes a few seconds per post on CPU and is slow by design.
+  Run it once before a working session so the model download is out of the
+  way.
+- Section 6 trains three seeds in one cell: about 3.6 minutes at 3 epochs and
+  about 15.6 minutes at 15 epochs on this CPU. Set `RUN_LABEL` to `"after"`
+  before the re-run, or the "before" file is overwritten. To reproduce the
+  "before" run set `EPOCHS = 3` and `RUN_LABEL = "before"`.
+- The student's own 30 labels (`my_staff_labels.csv`) must be saved before the
+  staff key (`data/staff_labels.csv`) is opened. The real key has columns
+  `id`, `label`, `borderline`, `why`; check it is not identical to
+  `my_staff_labels.csv` (`cmp`) before trusting a perfect score
+  (`ENVIRONMENT_SETUP.md` section 6).
+
+**Where each step's output is (all committed)**
+
+| Step | Command or action | Output file | Milestone entry |
+|---|---|---|---|
+| Unit 5, dataset | `python build_dataset.py` | `data/labels.csv` | Milestone 4 |
+| Unit 5, criteria | written by hand | `criteria.md` | Milestone 3 |
+| Unit 5, training run | notebook sections 2-5 | `results.json`, `test_split.csv` | Milestone 5 |
+| Unit 6, baseline | `python baseline.py` | `baseline_results.json`, `baseline_results_bare_names.json`, `label_definitions.txt` | Unit 6, Milestone 1 |
+| Unit 6, three seeds | notebook section 6, `RUN_LABEL = "before"` | `results_three_seeds_before.json` | Unit 6, Milestone 2 |
+| Unit 6, staff check | `python agreement.py`, `python kappa.py` | `my_staff_labels.csv`, `data/staff_labels.csv`, `agreement_results.json` | Unit 6, Milestone 3 |
+| Unit 6, verdicts and diagnoses | `python macro_f1_ci.py` and the one-line checks in `criteria.md` | `README.md` | Unit 6, Milestone 4 |
+| Unit 6, improvement | notebook section 6, `RUN_LABEL = "after"` | `results_three_seeds_after.json` | Unit 6, Milestone 5 |
+| Unit 6, write-up | README sections | `README.md` | Unit 6, Milestone 6 |
+
+All thirteen output files above are tracked in git (`git ls-files`, checked
+2026-10-31). Whether the course submission itself was made is not verifiable
+from the repository.
 
 ---
 
@@ -1856,24 +1904,3 @@ milestone).
 | An agreement check against the staff set, every disagreement adjudicated | 30 posts labeled by staff and by the author; report the rate; argue each disagreement | **Done, vacuously on adjudication** — 30 of 30 agreed, 0 disagreements, so nothing to adjudicate. Unit 6, Milestone 3 |
 | A verdict and a diagnosis for each of the five criteria | Met or missed against Unit 5's targets; for every miss, which label and what cause | **Done** — 1 MET (Criterion 4, revised wording), 4 MISSED, one shared root cause. Unit 6, Milestone 4 |
 | One improvement, made and measured | Change one thing, retrain, both result sets side by side | **Done** — `EPOCHS` 3 to 15; accuracy up on all seeds, no verdict changed. Unit 6, Milestone 5 |
-
----
-
-## 8. Setup
-
-Full setup — venv, `test.py`, the notebook kernel, and the Gemini-key step
-this repository's actual data pipeline needs but the course brief doesn't
-mention — lives in the companion file
-**[`ENVIRONMENT_SETUP.md`](ENVIRONMENT_SETUP.md)**. This section is a
-pointer, not a duplicate.
-
-In brief: fork and clone this repository, create a `.venv`, run
-`pip install -r requirements.txt` and `python test.py`, open
-`takemeter.ipynb` with this project's `.venv` kernel selected. No API key or
-account is required for any of that. An API key *is* required only if
-reproducing `build_dataset.py`'s data-collection step specifically — see
-`ENVIRONMENT_SETUP.md` for exactly why and how.
-
-Unit 6 adds no packages. The extra Unit 6 prerequisites (committed
-`results.json` and `test_split.csv`, the baseline model download, the staff
-files and the notebook's `RUN_LABEL`) are in `ENVIRONMENT_SETUP.md` section 6.
