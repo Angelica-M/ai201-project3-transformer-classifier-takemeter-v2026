@@ -1,4 +1,4 @@
-# TakeMeter
+# Transformer Classifier TakeMeter
 
 > ### 👋 Start here
 >
@@ -27,12 +27,6 @@
      HOW TO USE THIS FILE
 
      Unit 5 asks for the first five sections. Unit 6 adds the five below them.
-
-     Everything is pasted as TEXT. No screenshots, no images.
-
-     ⚠️ The confusion matrix especially. The notebook prints one as a markdown
-     table, ready to copy. A screenshot of a matrix earns nothing. Paste the
-     table.
      ───────────────────────────────────────────────────────────────────────── -->
 
 <!-- ═══════════════════════ UNIT 5 — THE BUILD ═══════════════════════ -->
@@ -692,9 +686,6 @@ The rule I followed: a criterion may be revised only if it could not be measured
 | 5 | Partly broken, for the same reason as 3: with no prediction at or above 0.80, precision is undefined. | Revise so that "no predictions at or above 0.80" is stated to count as MISSED. The 0.85 target is unchanged and the verdict does not change. |
 
 The revisions for 3 and 5 do not move any target and do not change any verdict. Their only effect is that the original wording can no longer be read generously, as "nothing it predicted was wrong". The original lines stay in `criteria.md` and each revision goes underneath with its reason, as the course requires.
-
-
-
 
 ---
 
